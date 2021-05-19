@@ -32,7 +32,7 @@ def rx_buffer():
     return
 
 
-def txd_platform(d):
+def txd_platform(in_multicast_queue, in_buffer_queue, dataTxQueue):
     msg = dataTxQueue.get()
     if not locMessages:
         in_buffer_queue.put(msg)
