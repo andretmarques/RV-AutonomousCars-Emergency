@@ -5,6 +5,9 @@ from threading import Thread, Event
 
 from Queue import *
 from message_gen import message_generator
+from Custom_Class import *
+import random
+from User import *
 
 # lock = threading.Lock()
 in_multicast_queue = Queue()
@@ -15,18 +18,38 @@ in_buffer_queue = Queue()
 shared_info = 0
 locMessages = []
 
-def user_interface():
+uid = random.randint(1, 250)
+
+
+def user_interface(denm_event):
     print("User interface\n")
-    return
+    t = Thread(target=wait_for_code, args=(denm_event, ))
+    t.start()
+    user = User(uid, "")
+    print("################################ User has ID:", user.id)
+    return user
 
 
-def message_gen(dataTxQueue):
-    message_generator(dataTxQueue, )
+def wait_for_code(denm_event):
+    code = ""
+    while len(code) != 6:
+        code = input("Insert your code: ")
+
+    user = User(uid, code)
+    denm_event.set()
+    print("################################ User with ID:", user.id, " inserted CODE: ", user.code)
+    return user
+
+
+def message_gen(dataTxQueue, denm_event):
+    message_generator(dataTxQueue, denm_event)
     return
+
 
 def tx_buffer():
     print("Transmission buffer\n")
     return
+
 
 def rx_buffer():
     print("Receptor buffer\n")
@@ -34,12 +57,12 @@ def rx_buffer():
 
 
 def txd_platform(in_multicast_queue, in_buffer_queue, dataTxQueue):
-    msg = dataTxQueue.get()
-    if not locMessages:
-        in_buffer_queue.put(msg)
-    else:
-        in_multicast_queue.put(msg)
-    return
+    while True:
+        msg = dataTxQueue.get()
+        if not locMessages:
+            in_buffer_queue.put(msg)
+        else:
+            in_multicast_queue.put(msg)
 
 
 def txd_multicast(in_multicast_queue):
@@ -75,7 +98,7 @@ def main(argv):
         print('creating threads \n')
         # these are the treads that you might need to use. They are crated according to the information flow
         denm_event = Event()
-        t = Thread(target=user_interface, args=())
+        t = Thread(target=user_interface, args=(denm_event, ))
         t.start()
         threads.append(t)
         print('thread create: user_interface\n')
