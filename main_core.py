@@ -9,6 +9,7 @@ from Custom_Class import *
 in_multicast_queue = Queue()
 out_multicast_queue = Queue()
 dataTxQueue = Queue()
+to_buffer_queue = Queue()
 in_buffer_queue = Queue()
 
 shared_info = 0
@@ -23,12 +24,8 @@ def message_gen(dataTxQueue):
     message_generator(dataTxQueue, )
     return
 
-def tx_buffer():
-    print("Transmission buffer\n")
-    return
-
-def rx_buffer():
-    print("Receptor buffer\n")
+def tx_buffer(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable):
+    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable)
     return
 
 
@@ -84,15 +81,10 @@ def main(argv):
         threads.append(t)
         print('thread create: message_generator\n')
 
-        t = Thread(target=tx_buffer, args=())
+        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable))
         t.start()
         threads.append(t)
         print('thread create: transmission buffer\n')
-
-        t = Thread(target=rx_buffer, args=())
-        t.start()
-        threads.append(t)
-        print('thread create: receptor buffer\n')
 
         # thread for sending data for transmission
         # arguments: queue to send data to txd_multicast.
