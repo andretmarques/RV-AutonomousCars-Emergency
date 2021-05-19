@@ -1,6 +1,7 @@
 from Queue import Queue
 import Custom_Class
 from datetime import datetime, timedelta
+import threading
 
 in_multicast_queue = Queue()
 out_multicast_queue = Queue()
@@ -9,7 +10,6 @@ locTable = []
 locTableIds = []
 
 VALIDITY = timedelta(0, 10)
-print(VALIDITY)
 
 
 def update_LocTable(msgId, time, x, y, locTable):
@@ -38,12 +38,16 @@ def rxd_platform(out_multicast_queue, id, locTable, locTableIds):
 
         elif isinstance(msg, Custom_Class.CAM) and msg.ttl == 0:
             if msg.id in locTableIds:
-                update_LocTable(msg.id, msg.time, msg.x, msg.y)
+                lock = threading.Lock()
+                update_LocTable(msg.id, msg.time, msg.x, msg.y, locTable)
+                lock.release()
 
             else:
                 locM = Custom_Class.LOCM(msg.id, msg.time, msg.x, msg.y, datetime.now(), VALIDITY)
+                lock = threading.Lock()
                 locTable.append(locM)
                 locTableIds.append(locM.id)
+                lock.release()
 
         elif isinstance(msg, Custom_Class.DENM):
             dataRXQueue.put(msg)
@@ -54,6 +58,13 @@ def rxd_platform(out_multicast_queue, id, locTable, locTableIds):
 def check_mgs_validity(locTable, locTableIds):
     for msg in locTable:
         if msg.time + msg.val > datetime.now():
+            lock = threading.Lock()
             locTable.remove(msg)
             locTableIds.remove(msg.id)
+            lock.release()
     return
+
+
+def check_validity_thread():
+    rt = Custom_Class.RepeatedTimer(2, check_mgs_validity, locTable, locTableIds)
+    return rt

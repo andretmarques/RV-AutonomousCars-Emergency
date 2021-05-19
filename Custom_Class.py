@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from threading import Timer
 
+
 @dataclass
 class CAM:
     id: int
@@ -10,13 +11,15 @@ class CAM:
     time: datetime
     ttl: int
 
+
 @dataclass
 class DENM:
     id: int
     state: bool
     time: datetime
     ttl: int
-      
+
+
 @dataclass
 class LOCM:
     id: int
@@ -25,6 +28,7 @@ class LOCM:
     y: int
     timestamp: datetime
     val: timedelta
+
 
 class RepeatedTimer(object):
     def __init__(self, interval, function, *args, **kwargs):
@@ -50,4 +54,3 @@ class RepeatedTimer(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
-
