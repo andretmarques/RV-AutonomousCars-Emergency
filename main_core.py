@@ -24,7 +24,7 @@ def user_interface(denm_event):
     t = Thread(target=wait_for_code, args=(denm_event, ))
     t.start()
     user = User(uid, "")
-    print("################################", user.id)
+    print("################################ User has ID:", user.id)
     return user
 
 
@@ -35,7 +35,7 @@ def wait_for_code(denm_event):
 
     user = User(uid, code)
     denm_event.set()
-    print("################################", user.id, user.code)
+    print("################################ User with ID:", user.id, " inserted CODE: ", user.code)
     return user
 
 
@@ -55,12 +55,12 @@ def rx_buffer():
 
 
 def txd_platform(in_multicast_queue, in_buffer_queue, dataTxQueue):
-    msg = dataTxQueue.get()
-    if not locMessages:
-        in_buffer_queue.put(msg)
-    else:
-        in_multicast_queue.put(msg)
-    return
+    while True:
+        msg = dataTxQueue.get()
+        if not locMessages:
+            in_buffer_queue.put(msg)
+        else:
+            in_multicast_queue.put(msg)
 
 
 def txd_multicast(in_multicast_queue):
