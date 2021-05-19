@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import sys, time
+import sys
+import time
 from threading import Thread, Event
+
 from Queue import *
 from message_gen import message_generator
-from Custom_Class import *
 
 # lock = threading.Lock()
 in_multicast_queue = Queue()
