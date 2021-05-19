@@ -27,12 +27,19 @@ VALIDITY = timedelta(0, 10)
 
 
 def user_interface(denm_event):
+
     print("User interface\n")
-    t = Thread(target=wait_for_code, args=(denm_event,))
-    t.start()
+    tDEN = Thread(target=wait_for_code, args=(denm_event,))
+    tDEN.start()
+
+    tStop = Thread(target=stop_den_messages, args=(denm_event,))
+    tStop.start()
     user = User(uid, "")
     print("################################ User has ID:", user.id)
-    return user
+
+    tDEN.join()
+    tStop.join()
+    return
 
 
 def wait_for_code(denm_event):
@@ -43,7 +50,12 @@ def wait_for_code(denm_event):
     user = User(uid, code)
     denm_event.set()
     print("################################ User with ID:", user.id, " inserted CODE: ", user.code)
-    return user
+    return
+
+
+def stop_den_messages(denm_event):
+    while input() != "stop":
+        denm_event.clear()
 
 
 def message_gen(dataTxQueue, denm_event):
@@ -132,6 +144,7 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds):
     print('terminating xd_platform\n')
     return
 
+
 def check_mgs_validity(locTable, locTableIds):
     for msg in locTable:
         if msg.time + msg.val > datetime.now():
@@ -204,6 +217,11 @@ def main(argv):
         t.start()
         threads.append(t)
         print('thread create: rxd_platform\n')
+
+        t = Thread(target=check_validity_thread)
+        t.start()
+        threads.append(t)
+        print('thread create: check_validity_thread\n')
 
     except:
         # exit the program if there is an error when opening one of the threads
