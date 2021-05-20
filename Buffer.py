@@ -1,9 +1,8 @@
-import time
-from Custom_Class import LOCM, CAM, DENM
+from datetime import datetime, timedelta
+import Custom_Class
 NULL = 0
 
 in_multicast_queue = Queue()
-out_multicast_queue = Queue()
 dataRXQueue = Queue()
 locTable = []
 locTableIds = []
@@ -50,10 +49,6 @@ def tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue):
                 pass
     return
 
-##################################################
-# BUFFER
-##################################################
-
 
 def write_in_buffer(packet):
     if in_buffer_queue.full():
@@ -70,7 +65,7 @@ def remove_buffer_head():
 
 def send_packet(packet):
     if in_LocTable_ids(packet, locTable):
-        out_multicast_queue.put()
+        in_multicast_queue.put()
     else:
         print("Exceeded packet lifetime. Too late to send packet")
     return
