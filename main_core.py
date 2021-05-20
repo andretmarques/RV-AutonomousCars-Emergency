@@ -2,10 +2,15 @@
 import sys
 import time
 from threading import Thread, Event, Lock
+
+import Custom_Class
+from Queue import *
 from message_gen import message_generator
+from Custom_Class import *
 import random
 from User import User
 from Queue import *
+from Buffer import *
 import Custom_Class
 from datetime import datetime, timedelta
 from DataManagerRx import rxd_platform
@@ -14,6 +19,8 @@ from mcast4 import rxd_multicast, txd_multicast
 # lock = threading.Lock()
 in_multicast_queue = Queue()
 out_multicast_queue = Queue()
+dataTxQueue = Queue()
+to_buffer_queue = Queue()
 data_tx_queue = Queue()
 data_rx_queue = Queue()
 in_buffer_queue = Queue()
@@ -62,22 +69,17 @@ def message_gen(dataTxQueue, denm_event):
     return
 
 
-def tx_buffer():
-    print("Transmission buffer\n")
-    return
-
-
-def rx_buffer():
-    print("Receptor buffer\n")
+def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable):
+    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable)
     return
 
 
 def txd_platform(in_multicast_queue, in_buffer_queue, data_tx_queue):
     while True:
         msg = data_tx_queue.get()
-        if len(locTable) != 0:
+        if len(locTable) == 0:
             print("Message to Buffer\n")
-            in_buffer_queue.put(msg)
+            to_buffer_queue.put(msg)
         else:
             locTable.clear()
             locTableIds.clear()
@@ -120,15 +122,10 @@ def main(argv):
         threads.append(t)
         print('thread create: message_generator\n')
 
-        t = Thread(target=tx_buffer, args=())
+        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable))
         t.start()
         threads.append(t)
         print('thread create: transmission buffer\n')
-
-        t = Thread(target=rx_buffer, args=())
-        t.start()
-        threads.append(t)
-        print('thread create: receptor buffer\n')
 
         # thread for sending data for transmission
         # arguments: queue to send data to txd_multicast.
