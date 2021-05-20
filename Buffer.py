@@ -52,6 +52,7 @@ def tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue):
 
 def write_in_buffer(packet):
     if in_buffer_queue.full():
+        print("Written in buffer.\n")
         return
     else:
         in_buffer_queue.put(packet)
@@ -60,12 +61,14 @@ def write_in_buffer(packet):
 
 def remove_buffer_head():
     in_buffer_queue.get()
+    print("Removed from buffer.\n")
     return
 
 
 def send_packet(packet):
     if in_LocTable_ids(packet, locTable):
         in_multicast_queue.put()
+        print("Sent to multicast.\n")
     else:
         print("Exceeded packet lifetime. Too late to send packet")
     return
@@ -75,6 +78,8 @@ def flush_buffer():
     while not in_buffer_queue.empty():
         packet = in_buffer_queue.get()
         send_packet(in_buffer_queue, packet)
+        remove_buffer_head()
+    print("Buffer flushed.\n")
     return
 
 
