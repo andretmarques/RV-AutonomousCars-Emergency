@@ -51,11 +51,15 @@ def message_generator(queue, event):
     while True:
         while event.is_set():
             if not state:
+                print()
                 print("========== Starting DENM ==========")
+                print()
                 denm_timer.start()
                 state = True
         if state:
+            print()
             print("========== Stopping DENM ==========")
+            print()
             denm_timer.stop()
             state = False
 
