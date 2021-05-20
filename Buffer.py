@@ -92,5 +92,5 @@ def updatePktLifetime(msg):
     return msg.ttl
 
 
-def remainingLifetime(packet):
+def remainingLifetime(msg):
     return msg.ttl - 1
