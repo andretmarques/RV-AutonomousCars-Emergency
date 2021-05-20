@@ -36,8 +36,8 @@ def denm_loop(queue, identifier):
     return rt
 
 
-def message_generator(queue, event):
-    identifier = 9
+def message_generator(queue, event, uid):
+    identifier = uid
     cam_timer = cam_loop(queue, identifier, 0, 0)
 
     event.wait()

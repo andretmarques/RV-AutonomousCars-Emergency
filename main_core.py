@@ -35,16 +35,16 @@ uid = random.randint(1, 250)
 def user_interface(denm_event):
 
     print("User interface\n")
-    tDEN = Thread(target=wait_for_code, args=(denm_event,))
-    tDEN.start()
+    #tDEN = Thread(target=wait_for_code, args=(denm_event,))
+    #tDEN.start()
 
-    tStop = Thread(target=stop_den_messages, args=(denm_event,))
-    tStop.start()
+    #tStop = Thread(target=stop_den_messages, args=(denm_event,))
+    #tStop.start()
     user = User(uid, "")
     print("################################ User has ID:", user.id)
 
-    tDEN.join()
-    tStop.join()
+    #tDEN.join()
+    #tStop.join()
     return
 
 
@@ -64,13 +64,13 @@ def stop_den_messages(denm_event):
         denm_event.clear()
 
 
-def message_gen(dataTxQueue, denm_event):
-    message_generator(dataTxQueue, denm_event)
+def message_gen(dataTxQueue, denm_event, uid):
+    message_generator(dataTxQueue, denm_event, uid)
     return
 
 
-def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable):
-    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable)
+def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue):
+    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue)
     return
 
 
@@ -88,10 +88,8 @@ def txd_platform(in_multicast_queue, to_buffer_queue, data_tx_queue):
 def check_mgs_validity(locTable, locTableIds):
     for msg in locTable:
         if msg.time + msg.val > datetime.now():
-            lock = Lock()
             locTable.remove(msg)
             locTableIds.remove(msg.id)
-            lock.release()
     return
 
 
@@ -115,7 +113,7 @@ def main(argv):
         threads.append(t)
         print('thread create: user_interface\n')
 
-        t = Thread(target=message_gen, args=(data_tx_queue, denm_event))
+        t = Thread(target=message_gen, args=(data_tx_queue, denm_event, uid))
         t.start()
         threads.append(t)
         print('thread create: message_generator\n')

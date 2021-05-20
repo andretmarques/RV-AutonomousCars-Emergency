@@ -6,8 +6,8 @@ import threading
 VALIDITY = timedelta(0, 10)
 
 
-def update_LocTable(msgId, time, x, y, locTable):
-    index = locTable.index(msgId)
+def update_LocTable(msg, time, x, y, locTable):
+    index = locTable.index(msg)
     locTable[index].time = time
     locTable[index].x = x
     locTable[index].y = y
@@ -19,10 +19,13 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
     print('rxd_platform\n')
 
     while True:
+        print(" LOCTABLE ", str(locTable), "\n\n")
+
         msg = out_multicast_queue.get()
 
         if isinstance(msg, Custom_Class.CAM) or isinstance(msg,
                                                            Custom_Class.DENM):
+
             if msg.id == uid:
                 continue
 
@@ -31,22 +34,21 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
                 in_multicast_queue.put(msg)
                 continue
 
+        if isinstance(msg, Custom_Class.CAM):
+            print("\n\n$$$$$$$$$$$$ CAM ", msg)
 
-        elif isinstance(msg, Custom_Class.CAM) and msg.ttl == 0:
-            if msg.id in locTableIds:
-                lock = threading.Lock()
-                update_LocTable(msg.id, msg.time, msg.x, msg.y, locTable)
-                lock.release()
+            if msg.id in locTableIds and locTable.index:
+                update_LocTable(msg, msg.time, msg.x, msg.y, locTable)
 
             else:
-                locM = Custom_Class.LOCM(msg.id, msg.time, msg.x, msg.y, datetime.now(), VALIDITY)
-                lock = threading.Lock()
+                time = datetime.strptime(msg.time, '%Y-%m-%d %H:%M:%S.%f')
+                locM = Custom_Class.LOCM(msg.id, time, msg.x, msg.y, datetime.now(), VALIDITY)
                 locTable.append(locM)
                 locTableIds.append(locM.id)
-                lock.release()
 
         elif isinstance(msg, Custom_Class.DENM):
+            print("$$$$$$$$$$$$ DEM ", msg, "\n\n")
+
             data_rx_queue.put(msg)
     print('terminating xd_platform\n')
     return
-

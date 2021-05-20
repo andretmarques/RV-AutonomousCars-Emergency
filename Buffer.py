@@ -9,7 +9,7 @@ VALID = 10
 
 
 def isValid(msg):
-    if datetime.now() - datetime.strptime(msg.time, '%y-%m-%d %H:%M:%S') >= timedelta(0, VALID):
+    if datetime.now() - datetime.strptime(msg.time, '%Y-%m-%d %H:%M:%S.%f') >= timedelta(0, VALID):
         return False
     else:
         return True

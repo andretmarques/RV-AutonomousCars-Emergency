@@ -24,6 +24,7 @@ def rxd_multicast(out_multicast_queue):
     r = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     r.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    r.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     r.bind(('', PORT))
 
     group_bin = socket.inet_pton(socket.AF_INET, MYGROUP_4)
@@ -43,11 +44,8 @@ def rxd_multicast(out_multicast_queue):
         elif data["type"] == "DENM":
             del data["type"]
             data = DENM(**data)
-        print("$$$$$$$$$$$$ Message received", data)
         out_multicast_queue.put(data)
-        print(str(sender) + '  ' + repr(data))
     return
-
 
 
 def txd_multicast(in_multicast_queue):
