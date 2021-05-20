@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
+import threading
 import time
-from threading import Thread, Event, Lock
+from threading import Thread, Event, RLock
 
 import Custom_Class
 from Queue import *
@@ -77,19 +78,22 @@ def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue):
 def txd_platform(in_multicast_queue, to_buffer_queue, data_tx_queue):
     while True:
         msg = data_tx_queue.get()
-        if len(locTable) == 0:
-            print("Message to Buffer\n")
-            to_buffer_queue.put(msg)
-        else:
-            print("Message sent to Multicast\n")
-            in_multicast_queue.put(msg)
+        # if len(locTable) != 0:
+        #     print("Message to Buffer\n")
+        #     to_buffer_queue.put(msg)
+        # else:
+        print("Message sent to Multicast\n")
+        in_multicast_queue.put(msg)
 
 
 def check_mgs_validity(locTable, locTableIds):
-    for msg in locTable:
-        if msg.time + msg.val > datetime.now():
-            locTable.remove(msg)
-            locTableIds.remove(msg.id)
+    lock = RLock()
+    lock.acquire()
+    for i in range(len(locTable)):
+        if locTable[i].time + locTable[i].val < datetime.now():
+            locTableIds.remove(locTableIds[i])
+            locTable.remove(locTable[i])
+    lock.release()
     return
 
 

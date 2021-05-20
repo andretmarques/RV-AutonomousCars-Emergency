@@ -1,13 +1,12 @@
 from Queue import Queue
 import Custom_Class
 from datetime import datetime, timedelta
-import threading
-
+from threading import RLock
 VALIDITY = timedelta(0, 10)
 
 
-def update_LocTable(msg, time, x, y, locTable):
-    index = locTable.index(msg)
+
+def update_LocTable(index, time, x, y, locTable):
     locTable[index].time = time
     locTable[index].x = x
     locTable[index].y = y
@@ -36,15 +35,20 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
 
         if isinstance(msg, Custom_Class.CAM):
             print("\n\n$$$$$$$$$$$$ CAM ", msg)
+            lock = RLock()
+            lock.acquire()
 
-            if msg.id in locTableIds and locTable.index:
-                update_LocTable(msg, msg.time, msg.x, msg.y, locTable)
+            if msg.id in locTableIds:
+                index = locTableIds.index(msg.id)
+                time = datetime.strptime(msg.time, '%Y-%m-%d %H:%M:%S.%f')
+                update_LocTable(index, time, msg.x, msg.y, locTable)
 
             else:
                 time = datetime.strptime(msg.time, '%Y-%m-%d %H:%M:%S.%f')
                 locM = Custom_Class.LOCM(msg.id, time, msg.x, msg.y, datetime.now(), VALIDITY)
                 locTable.append(locM)
                 locTableIds.append(locM.id)
+            lock.release()
 
         elif isinstance(msg, Custom_Class.DENM):
             print("$$$$$$$$$$$$ DEM ", msg, "\n\n")
