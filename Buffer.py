@@ -50,10 +50,6 @@ def tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue):
                 pass
     return
 
-##################################################
-# BUFFER
-##################################################
-
 
 def write_in_buffer(packet):
     if in_buffer_queue.full():
@@ -92,5 +88,5 @@ def updatePktLifetime(msg):
     return msg.ttl
 
 
-def remainingLifetime(packet):
+def remainingLifetime(msg):
     return msg.ttl - 1

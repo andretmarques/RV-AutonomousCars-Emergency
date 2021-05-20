@@ -9,6 +9,7 @@ from message_gen import message_generator
 from Custom_Class import *
 import random
 from User import *
+from Buffer import *
 
 # lock = threading.Lock()
 in_multicast_queue = Queue()
@@ -52,7 +53,7 @@ def message_gen(dataTxQueue, denm_event):
     message_generator(dataTxQueue, denm_event)
     return
 
-  
+
 def tx_buffer(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable):
     tx_buffer_decides(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable)
     return
