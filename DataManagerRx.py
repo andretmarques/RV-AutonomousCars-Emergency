@@ -24,12 +24,12 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
         if isinstance(msg, Custom_Class.CAM) or isinstance(msg,
                                                            Custom_Class.DENM):
             if msg.id == uid:
-                pass
+                continue
 
             elif msg.ttl > 0:
                 msg.ttl = msg.ttl - 1
                 in_multicast_queue.put(msg)
-                pass
+                continue
 
 
         elif isinstance(msg, Custom_Class.CAM) and msg.ttl == 0:

@@ -1,58 +1,36 @@
 from datetime import datetime, timedelta
 import Custom_Class
+from Queue import *
+from threading import Lock
+from main_core import locTableIds, locTable, in_buffer_queue, in_multicast_queue
+
 NULL = 0
+VALID = 10
 
-in_multicast_queue = Queue()
-dataRXQueue = Queue()
-locTable = []
-locTableIds = []
-in_buffer_queue = Queue()
 
-validity = timedelta(0, 10)
-
-def isValid (msg, locTable):
-    if msg.id in locTableIds:
-        if msg.validity > 0:
-            return True
-        else:
-            locTableIds.remove(msg)
-            return
-    else:
+def isValid(msg):
+    if datetime.now() - datetime.strptime(msg.time, '%y-%m-%d %H:%M:%S') >= timedelta(0, VALID):
         return False
-
-def in_LocTable_ids(msg, locTable):
-    for ids in len(locTable):
-        id = ids.id
-        locTIds = locTIds.append(id)
-    if msg.id in locTIds:
+    else:
         return True
-    else:
-        return False
+
 
 def tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue):
     while True:
         msg_to_buffer = to_buffer_queue.get()
         if isinstance(msg_to_buffer, Custom_Class.CAM) or isinstance(msg_to_buffer, Custom_Class.DENM):
-            if msg_to_buffer.id == id:
-                pass
-            elif isValid(msg_to_buffer):
-                updatePktLifetime(msg_to_buffer);
+            if isValid(msg_to_buffer):
                 write_in_buffer(msg_to_buffer)
-                pass
         msg_to_transmit = in_buffer_queue.get()
-        if isinstance(msg_to_buffer, Custom_Class.CAM) or isinstance(msg_to_buffer, Custom_Class.DENM):
-            if msg_to_buffer.id == id:
-                pass
-            elif isValid(msg_to_transmit):
+        if isinstance(msg_to_transmit, Custom_Class.CAM) or isinstance(msg_to_transmit, Custom_Class.DENM):
+            if isValid(msg_to_transmit):
                 updatePktLifetime(msg_to_transmit)
-                send_packet(msg_to_transmit)
-                pass
+                in_multicast_queue.put(msg_to_transmit)
     return
 
 
 def write_in_buffer(packet):
     if in_buffer_queue.full():
-        print("Written in buffer.\n")
         return
     else:
         in_buffer_queue.put(packet)
@@ -62,24 +40,6 @@ def write_in_buffer(packet):
 def remove_buffer_head():
     in_buffer_queue.get()
     print("Removed from buffer.\n")
-    return
-
-
-def send_packet(packet):
-    if in_LocTable_ids(packet, locTable):
-        in_multicast_queue.put()
-        print("Sent to multicast.\n")
-    else:
-        print("Exceeded packet lifetime. Too late to send packet")
-    return
-
-
-def flush_buffer():
-    while not in_buffer_queue.empty():
-        packet = in_buffer_queue.get()
-        send_packet(in_buffer_queue, packet)
-        remove_buffer_head()
-    print("Buffer flushed.\n")
     return
 
 

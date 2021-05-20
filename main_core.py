@@ -74,15 +74,13 @@ def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable):
     return
 
 
-def txd_platform(in_multicast_queue, in_buffer_queue, data_tx_queue):
+def txd_platform(in_multicast_queue, to_buffer_queue, data_tx_queue):
     while True:
         msg = data_tx_queue.get()
         if len(locTable) == 0:
             print("Message to Buffer\n")
             to_buffer_queue.put(msg)
         else:
-            locTable.clear()
-            locTableIds.clear()
             print("Message sent to Multicast\n")
             in_multicast_queue.put(msg)
 
@@ -122,14 +120,14 @@ def main(argv):
         threads.append(t)
         print('thread create: message_generator\n')
 
-        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable))
+        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue))
         t.start()
         threads.append(t)
         print('thread create: transmission buffer\n')
 
         # thread for sending data for transmission
         # arguments: queue to send data to txd_multicast.
-        t = Thread(target=txd_platform, args=(in_multicast_queue, in_buffer_queue, data_tx_queue))
+        t = Thread(target=txd_platform, args=(in_multicast_queue, to_buffer_queue, data_tx_queue))
         t.start()
         threads.append(t)
         print('thread create: txd_platform\n')
