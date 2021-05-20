@@ -3,7 +3,7 @@ from Custom_Class import CAM, DENM, RepeatedTimer
 
 
 def create_and_send_denm(queue, identifier):
-    dt = datetime.now()
+    dt = str(datetime.now())
     ttl = 5
     msg = DENM(identifier, True, dt, ttl)
     print("Send DENM message")
@@ -12,7 +12,7 @@ def create_and_send_denm(queue, identifier):
 
 
 def create_and_send_cam(queue, identifier, x, y):
-    dt = datetime.now()
+    dt = str(datetime.now())
     ttl = 5
     msg = CAM(identifier, x, y, dt, ttl)
     print("Send CAM message")

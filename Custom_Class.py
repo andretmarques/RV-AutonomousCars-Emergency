@@ -8,7 +8,7 @@ class CAM:
     id: int
     x: int
     y: int
-    time: datetime
+    time: str
     ttl: int
 
 
@@ -16,7 +16,7 @@ class CAM:
 class DENM:
     id: int
     state: bool
-    time: datetime
+    time: str
     ttl: int
 
 
