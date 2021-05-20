@@ -54,7 +54,7 @@ def message_gen(dataTxQueue, denm_event):
 
   
 def tx_buffer(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable):
-    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable)
+    tx_buffer_decides(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable)
     return
 
 
@@ -164,7 +164,7 @@ def main(argv):
         threads.append(t)
         print('thread create: message_generator\n')
 
-        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable))
+        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, out_multicast_queue, locTable))
         t.start()
         threads.append(t)
         print('thread create: transmission buffer\n')
