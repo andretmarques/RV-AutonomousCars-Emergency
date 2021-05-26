@@ -31,8 +31,6 @@ class BEACON:
 class LOCM:
     id: int
     time: datetime
-    x: int
-    y: int
     timestamp: datetime
     val: timedelta
 
