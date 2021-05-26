@@ -47,7 +47,7 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
             lock.release()
 
         elif isinstance(msg, Custom_Class.DENM):
-            print("$$$$$$$$$$$$ DEM ", msg, "\n\n")
+            print("$$$$$$$$$$$$ Received DEM \n\n")
 
             data_rx_queue.put(msg)
     print('terminating xd_platform\n')

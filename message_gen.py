@@ -32,7 +32,6 @@ def create_and_send_beacon(queue, identifier):
 
 def add_message_to_queue(queue, msg):
     queue.put(msg)
-    print(msg.time)
     return
 
 
