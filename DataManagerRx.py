@@ -1,7 +1,7 @@
-from Queue import Queue
-import Custom_Class
 from datetime import datetime, timedelta
 from threading import RLock
+
+import Custom_Class
 
 VALIDITY = timedelta(0, 10)
 

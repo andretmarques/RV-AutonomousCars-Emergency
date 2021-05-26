@@ -1,10 +1,6 @@
 from datetime import datetime
-from time import sleep
 
 from Custom_Class import CAM, DENM, BEACON, RepeatedTimer
-from Queue import *
-
-from threading import Event, Thread
 
 
 def create_and_send_denm(queue, identifier):

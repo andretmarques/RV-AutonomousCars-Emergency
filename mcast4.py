@@ -4,11 +4,9 @@
 #################################################
 import dataclasses
 import json
-import time
 import socket
 import struct
-import sys
-from threading import Thread
+
 from Custom_Class import CAM, DENM, BEACON
 
 PORT = 4261

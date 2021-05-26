@@ -1,25 +1,18 @@
 #!/usr/bin/env python
+import random
 import select
 import sys
-import threading
 import time
 from threading import Thread, Event, RLock
-from tokenize import String
 
-import Custom_Class
-from Queue import *
-from message_gen import message_generator
-from Custom_Class import *
-import random
-from User import User
-from Queue import *
 from Buffer import *
-import Custom_Class
-from datetime import datetime, timedelta
+from Custom_Class import *
 from DataManagerRx import rxd_platform
+from User import User
 from mcast4 import rxd_multicast, txd_multicast
+from message_gen import message_generator
+from Queue import *
 
-# lock = threading.Lock()
 in_multicast_queue = Queue()
 out_multicast_queue = Queue()
 dataTxQueue = Queue()
@@ -40,7 +33,7 @@ def user_interface(denm_event):
     print("User interface\n")
     user = User(uid, "")
     while True:
-        ins, outs, exs = select.select([sys.stdin], [], [])
+        ins, _, _ = select.select([sys.stdin], [], [])
         if ins[0] == sys.stdin:
             code = sys.stdin.readline().strip()
             if len(code) == 6 and user.code == "":

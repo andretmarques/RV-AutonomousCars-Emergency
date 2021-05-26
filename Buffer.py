@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
+
 import Custom_Class
-from Queue import *
-from threading import Lock
-from main_core import locTableIds, locTable, in_buffer_queue, in_multicast_queue
+from main_core import in_buffer_queue
 
 NULL = 0
 VALID = 10
