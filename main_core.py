@@ -69,8 +69,8 @@ def message_gen(dataTxQueue, denm_event):
     return
 
 
-def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable):
-    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue, locTable)
+def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue):
+    tx_buffer_decides(to_buffer_queue, in_buffer_queue, in_multicast_queue)
     return
 
 

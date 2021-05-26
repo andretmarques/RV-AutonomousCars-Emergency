@@ -49,4 +49,3 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
             data_rx_queue.put(msg)
     print('terminating xd_platform\n')
     return
-
