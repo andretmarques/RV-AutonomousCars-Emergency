@@ -21,6 +21,13 @@ class DENM:
 
 
 @dataclass
+class BEACON:
+    id: int
+    time: str
+    ttl: int
+
+
+@dataclass
 class LOCM:
     id: int
     time: datetime
