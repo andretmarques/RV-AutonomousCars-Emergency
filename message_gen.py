@@ -8,7 +8,7 @@ from threading import Event, Thread
 
 
 def create_and_send_denm(queue, identifier):
-    dt = datetime.now()
+    dt = str(datetime.now())
     ttl = 5
     msg = DENM(identifier, True, dt, ttl)
     print("Send DENM message")
@@ -17,7 +17,7 @@ def create_and_send_denm(queue, identifier):
 
 
 def create_and_send_cam(queue, identifier, x, y):
-    dt = datetime.now()
+    dt = str(datetime.now())
     ttl = 5
     msg = CAM(identifier, x, y, dt, ttl)
     print("Send CAM message")
@@ -41,10 +41,9 @@ def denm_loop(queue, identifier):
     rt.stop()
     return rt
 
-
-def message_generator(queue, event):
+def message_generator(queue, event, uid):
     state = False
-    identifier = 9
+    identifier = uid
     cam_timer = cam_loop(queue, identifier, 0, 0)
     denm_timer = denm_loop(queue, identifier)
 
