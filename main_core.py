@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+import select
 import sys
 import threading
 import time
 from threading import Thread, Event, RLock
+from tokenize import String
 
 import Custom_Class
 from Queue import *
@@ -36,33 +38,19 @@ uid = random.randint(1, 250)
 def user_interface(denm_event):
 
     print("User interface\n")
-    #tDEN = Thread(target=wait_for_code, args=(denm_event,))
-    #tDEN.start()
-
-    #tStop = Thread(target=stop_den_messages, args=(denm_event,))
-    #tStop.start()
     user = User(uid, "")
-    print("################################ User has ID:", user.id)
-
-    #tDEN.join()
-    #tStop.join()
+    while True:
+        ins, outs, exs = select.select([sys.stdin], [], [])
+        if ins[0] == sys.stdin:
+            code = sys.stdin.readline().strip()
+            if len(code) == 6 and user.code == "":
+                user = User(uid, code)
+                denm_event.set()
+                print("################################ User with ID:", user.id, " inserted CODE: ", user.code)
+            elif code == "stop":
+                denm_event.clear()
+                user = User(uid, "")
     return
-
-
-def wait_for_code(denm_event):
-    code = ""
-    while len(code) != 6:
-        code = input("Insert your code: ")
-
-    user = User(uid, code)
-    denm_event.set()
-    print("################################ User with ID:", user.id, " inserted CODE: ", user.code)
-    return
-
-
-def stop_den_messages(denm_event):
-    while input() != "stop":
-        denm_event.clear()
 
 
 def message_gen(dataTxQueue, denm_event, uid):

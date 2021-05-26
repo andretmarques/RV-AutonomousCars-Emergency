@@ -16,7 +16,6 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
     print('rxd_platform\n')
 
     while True:
-        print(" LOCTABLE ", str(locTable), "\n\n")
 
         msg = out_multicast_queue.get()
 
