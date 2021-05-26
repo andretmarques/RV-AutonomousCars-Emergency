@@ -78,12 +78,18 @@ def tx_buffer(to_buffer_queue, in_buffer_queue, in_multicast_queue):
 def txd_platform(in_multicast_queue, to_buffer_queue, data_tx_queue):
     while True:
         msg = data_tx_queue.get()
-        # if len(locTable) != 0:
-        #     print("Message to Buffer\n")
-        #     to_buffer_queue.put(msg)
-        # else:
-        print("Message sent to Multicast\n")
-        in_multicast_queue.put(msg)
+
+        if type(msg) == BEACON:
+            in_multicast_queue.put(msg)
+
+        else:
+            if len(locTable) == 0:
+                print("Message to Buffer\n")
+                to_buffer_queue.put(msg)
+
+            else:
+                print("Message sent to Multicast\n")
+                in_multicast_queue.put(msg)
 
 
 def check_mgs_validity(locTable, locTableIds):
