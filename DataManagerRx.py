@@ -31,6 +31,11 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
                 continue
 
         if isinstance(msg, Custom_Class.CAM) or isinstance(msg, Custom_Class.BEACON):
+            if isinstance(msg, Custom_Class.CAM):
+                print("####################CAM#####################################")
+                print(msg)
+                print("####################END_CAM#################################")
+
             lock = RLock()
             lock.acquire()
 

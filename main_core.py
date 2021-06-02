@@ -48,7 +48,7 @@ def user_interface(denm_event):
 
 
 def readCoor(in_coord_queue):
-    f = open("initialcoor", "r")
+    f = open("coords2.txt", "r")
     coord = f.readline().split()
     x = coord[0]
     y = coord[1]
@@ -69,6 +69,7 @@ def readCoor(in_coord_queue):
             x = int(x) - 1
             coord[0] = str(x)
         in_coord_queue.put(coord)
+        time.sleep(3.8)
 
 
 def stop_den_messages(denm_event):
