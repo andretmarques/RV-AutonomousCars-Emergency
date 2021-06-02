@@ -2,6 +2,7 @@
 import random
 import select
 import sys
+import threading
 import time
 from threading import Thread, Event, RLock
 
@@ -20,6 +21,7 @@ to_buffer_queue = Queue()
 data_tx_queue = Queue()
 data_rx_queue = Queue()
 in_buffer_queue = Queue()
+in_coord_queue = Queue()
 
 shared_info = 0
 locTable = []
@@ -29,7 +31,6 @@ uid = random.randint(1, 250)
 
 
 def user_interface(denm_event):
-
     print("User interface\n")
     user = User(uid, "")
     while True:
@@ -46,8 +47,37 @@ def user_interface(denm_event):
     return
 
 
-def message_gen(dataTxQueue, denm_event, uid):
-    message_generator(dataTxQueue, denm_event, uid)
+def readCoor(in_coord_queue):
+    f = open("initialcoor", "r")
+    coord = f.readline().split()
+    x = coord[0]
+    y = coord[1]
+    buss = coord[2]
+    while True:
+        # TODO semaphore flag OP
+
+        if buss == 'N':
+            y = int(y) + 1
+            coord[1] = str(y)
+        if buss == 'S':
+            y = int(y) - 1
+            coord[1] = str(y)
+        if buss == 'E':
+            x = int(x) + 1
+            coord[0] = str(x)
+        if buss == 'O':
+            x = int(x) - 1
+            coord[0] = str(x)
+        in_coord_queue.put(coord)
+
+
+def stop_den_messages(denm_event):
+    while input() != "stop":
+        denm_event.clear()
+
+
+def message_gen(dataTxQueue, denm_event, uid, in_coord_queue):
+    message_generator(dataTxQueue, denm_event, uid, in_coord_queue)
     return
 
 
@@ -104,7 +134,12 @@ def main(argv):
         threads.append(t)
         print('thread create: user_interface\n')
 
-        t = Thread(target=message_gen, args=(data_tx_queue, denm_event, uid))
+        t = Thread(target=readCoor, args=(in_coord_queue,))
+        t.start()
+        threads.append(t)
+        print('thread create: \n')
+
+        t = Thread(target=message_gen, args=(data_tx_queue, denm_event, uid, in_coord_queue,))
         t.start()
         threads.append(t)
         print('thread create: message_generator\n')
@@ -137,7 +172,8 @@ def main(argv):
 
         # #thread for receiving data from other node
         # # arguments: queue to receive data from rxd_multicast. shared data structure to communicate with txd_platform
-        t = Thread(target=rxd_platform, args=(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue, in_multicast_queue))
+        t = Thread(target=rxd_platform,
+                   args=(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue, in_multicast_queue))
         t.start()
         threads.append(t)
         print('thread create: rxd_platform\n')

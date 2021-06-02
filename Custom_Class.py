@@ -8,6 +8,7 @@ class CAM:
     id: int
     x: int
     y: int
+    buss: str
     time: str
     ttl: int
 
