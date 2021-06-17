@@ -81,3 +81,28 @@ def message_generator(queue, event, uid, in_coord_queue):
             print()
             denm_timer.stop()
             state = False
+
+
+def create_and_send_cam_rsu(queue, identifier):
+    x = 1
+    y = 1
+    buss = "N"
+    dt = str(datetime.now())
+    ttl = 5
+    msg = CAM(identifier, x, y, buss, dt, ttl)
+    print("Send CAM message")
+    add_message_to_queue(queue, msg)
+    return msg
+
+
+def cam_loop_RSU(queue, identifier):
+    rt = RepeatedTimer(2, create_and_send_cam_rsu, queue, identifier)
+    return rt
+
+
+def message_generator_rsu(queue, uid):
+    identifier = uid
+    cam_timer = cam_loop_RSU(queue, identifier)
+    beacon_timer = beacon_loop(queue, identifier)
+
+
