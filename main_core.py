@@ -49,7 +49,7 @@ def user_interface(denm_event):
     return
 
 
-def readCoor(in_coord_queue):
+def readCoor(in_coord_queue, car_event):
     gpio_data = {}
     gpio_data = read_gpio_conf("gpio_pins")
     pwm_motor = {}
@@ -57,7 +57,7 @@ def readCoor(in_coord_queue):
 
     direction = 'forward_dir'
 
-    coord = ['0', '0' , 'N']
+    coord = ['0', '0', 'N']
     x = coord[0]
     y = coord[1]
     buss = coord[2]
@@ -67,17 +67,24 @@ def readCoor(in_coord_queue):
         if buss == 'N':
             y = int(y) + 1
             coord[1] = str(y)
-        if buss == 'S':
+        elif buss == 'S':
             y = int(y) - 1
             coord[1] = str(y)
-        if buss == 'E':
+        elif buss == 'E':
             x = int(x) + 1
             coord[0] = str(x)
-        if buss == 'O':
+        elif buss == 'O':
             x = int(x) - 1
             coord[0] = str(x)
         in_coord_queue.put(coord)
+
+        if not car_event.is_set():
+            direction = 'forward_dir'
+        else:
+            direction = 'stop'
         control_engines(gpio_data, direction, pwm_motor)
+
+
 
 
 def stop_den_messages(denm_event):
@@ -138,12 +145,13 @@ def main(argv):
         print('creating threads \n')
         # these are the treads that you might need to use. They are crated according to the information flow
         denm_event = Event()
+        car_event = Event()
         t = Thread(target=user_interface, args=(denm_event,))
         t.start()
         threads.append(t)
         print('thread create: user_interface\n')
 
-        t = Thread(target=readCoor, args=(in_coord_queue,))
+        t = Thread(target=readCoor, args=(in_coord_queue,car_event,))
         t.start()
         threads.append(t)
         print('thread create: \n')
@@ -153,14 +161,14 @@ def main(argv):
         threads.append(t)
         print('thread create: message_generator\n')
 
-        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue))
+        t = Thread(target=tx_buffer, args=(to_buffer_queue, in_buffer_queue, in_multicast_queue,))
         t.start()
         threads.append(t)
         print('thread create: transmission buffer\n')
 
         # thread for sending data for transmission
         # arguments: queue to send data to txd_multicast.
-        t = Thread(target=txd_platform, args=(in_multicast_queue, to_buffer_queue, data_tx_queue))
+        t = Thread(target=txd_platform, args=(in_multicast_queue, to_buffer_queue, data_tx_queue,))
         t.start()
         threads.append(t)
         print('thread create: txd_platform\n')
@@ -182,7 +190,7 @@ def main(argv):
         # #thread for receiving data from other node
         # # arguments: queue to receive data from rxd_multicast. shared data structure to communicate with txd_platform
         t = Thread(target=rxd_platform,
-                   args=(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue, in_multicast_queue))
+                   args=(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue, in_multicast_queue, car_event,))
         t.start()
         threads.append(t)
         print('thread create: rxd_platform\n')

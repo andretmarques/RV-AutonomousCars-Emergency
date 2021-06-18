@@ -12,7 +12,7 @@ def update_LocTable(index, time, locTable):
     locTable[index].val = VALIDITY
 
 
-def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue, in_multicast_queue):
+def rxd_platform(out_multicast_queue, uid,locTable, locTableIds, data_rx_queue, in_multicast_queue, car_event):
     print('rxd_platform\n')
 
     while True:
@@ -51,6 +51,13 @@ def rxd_platform(out_multicast_queue, uid, locTable, locTableIds, data_rx_queue,
                 locTable.append(locM)
                 locTableIds.append(locM.id)
             lock.release()
+
+            if isinstance(msg, Custom_Class.CAMSEM):
+                if msg.buss == "O" and msg.state == "RED":
+                    car_event.set()
+                elif msg.buss == "O" and (msg.state == "GREEN" or msg.state == "EMS"):
+                    car_event.clear()
+
 
         elif isinstance(msg, Custom_Class.DENM):
             print("$$$$$$$$$$$$ Received DEM \n\n")
