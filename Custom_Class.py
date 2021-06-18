@@ -60,3 +60,15 @@ class RepeatedTimer(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
+
+
+@dataclass
+class CAMSEM:
+    id: int
+    x: int
+    y: int
+    buss: str
+    time: str
+    ttl: int
+    state: str
+

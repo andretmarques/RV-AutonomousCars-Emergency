@@ -76,8 +76,6 @@ def readCoor(in_coord_queue):
         if buss == 'O':
             x = int(x) - 1
             coord[0] = str(x)
-
-        print("#########################", coord)
         in_coord_queue.put(coord)
         control_engines(gpio_data, direction, pwm_motor)
 

@@ -7,7 +7,7 @@ import json
 import socket
 import struct
 
-from Custom_Class import CAM, DENM, BEACON
+from Custom_Class import CAM, DENM, BEACON, CAMSEM
 
 PORT = 4261
 MYGROUP_4 = '225.0.0.250'
@@ -45,6 +45,9 @@ def rxd_multicast(out_multicast_queue):
         elif data["type"] == "BEACON":
             del data["type"]
             data = BEACON(**data)
+        elif data["type"] == "CAMSEM":
+            del data["type"]
+            data = CAMSEM(**data)
         out_multicast_queue.put(data)
     return
 
@@ -68,6 +71,9 @@ def txd_multicast(in_multicast_queue):
         elif isinstance(data, BEACON):
             data = dataclasses.asdict(data)
             data["type"] = "BEACON"
+        elif isinstance(data, CAMSEM):
+            data = dataclasses.asdict(data)
+            data["type"] = "CAMSEM"
         data = json.dumps(data)
         data = data + '\0'
         data_to_send = data.encode(encoding='UTF-8')
