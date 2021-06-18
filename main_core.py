@@ -68,6 +68,8 @@ def readCoor(in_coord_queue):
         if buss == 'O':
             x = int(x) - 1
             coord[0] = str(x)
+            print("**** ********** ************ ************** ***********")
+            print("CAR= ", x)
         in_coord_queue.put(coord)
         time.sleep(3.8)
 
