@@ -13,6 +13,8 @@ from User import User
 from mcast4 import rxd_multicast, txd_multicast
 from message_gen import message_generator
 from Queue import *
+from control_services import read_gpio_conf, gpio_init, stop_control, stop_gpio, control_engines
+
 
 in_multicast_queue = Queue()
 out_multicast_queue = Queue()
@@ -48,8 +50,14 @@ def user_interface(denm_event):
 
 
 def readCoor(in_coord_queue):
-    f = open("coords2.txt", "r")
-    coord = f.readline().split()
+    gpio_data = {}
+    gpio_data = read_gpio_conf("gpio_pins")
+    pwm_motor = {}
+    gpio_init(gpio_data, pwm_motor)
+
+    direction = 'forward_dir'
+
+    coord = ['0', '0' , 'N']
     x = coord[0]
     y = coord[1]
     buss = coord[2]
@@ -68,8 +76,10 @@ def readCoor(in_coord_queue):
         if buss == 'O':
             x = int(x) - 1
             coord[0] = str(x)
+
+        print("#########################", coord)
         in_coord_queue.put(coord)
-        time.sleep(3.8)
+        control_engines(gpio_data, direction, pwm_motor)
 
 
 def stop_den_messages(denm_event):
